@@ -24,7 +24,13 @@ It looks like this:
 You can find more details about how it works around the web, 
 like at [Last Minute Engineers](https://lastminuteengineers.com/pulse-sensor-arduino-tutorial/).
 
-## Execution
+## Connections
+
+- `GND` of the sensor is connected to `GND` of the discovery board
+- `Vcc` of the sensor is connected to `3V` of the discovery board
+- `A0` (Sig) of the sensor is connected to the `PA2` pin of the discovery board
+
+# Execution
 
 You can just execute the binary and it will use RTT to display timestamp + pulse value
 
