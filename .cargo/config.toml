@@ -1,0 +1,10 @@
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+rustflags = [ "-C", "link-arg=-Tlink.x", ]
+runner = 'probe-run --chip STM32F303VCTx'
+
+[profile.release]
+opt-level = "z"  # Optimize for size
+lto = true
