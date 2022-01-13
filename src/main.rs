@@ -12,6 +12,7 @@ use cortex_m::interrupt::Mutex;
 use cortex_m::peripheral::syst::SystClkSource;
 use cortex_m::peripheral::SYST;
 
+use stm32f3xx_hal::adc::{Adc, ClockMode};
 use stm32f3xx_hal::pac;
 use stm32f3xx_hal::prelude::*;
 use stm32f3xx_hal::rcc::Clocks;
@@ -70,11 +71,10 @@ fn sleepms(ms: u64) {
 #[entry]
 fn main() -> ! {
     rtt_init_print!();
-    rprintln!("Hello, world!");
 
-    let dp = pac::Peripherals::take().unwrap();
+    let mut dp = pac::Peripherals::take().unwrap();
     let mut flash = dp.FLASH.constrain();
-    let rcc = dp.RCC.constrain();
+    let mut rcc = dp.RCC.constrain();
     let clocks = rcc.cfgr.freeze(&mut flash.acr);
 
     let core_periphs = cortex_m::Peripherals::take().unwrap();
@@ -86,11 +86,22 @@ fn main() -> ! {
             .replace(TickCounter::new(core_periphs.SYST, &clocks))
     });
 
-    let mut counter = 0;
+    let mut adc1 = Adc::adc1(
+        dp.ADC1,
+        &mut dp.ADC1_2,
+        &mut rcc.ahb,
+        ClockMode::SyncDiv4,
+        clocks,
+    );
+
+    let mut gpioa = dp.GPIOA.split(&mut rcc.ahb);
+    let mut pa2 = gpioa.pa2.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
+    adc1.setup_oneshot();
+
     loop {
-        sleepms(1000);
-        rprintln!("{}: Still running: {}", millis(), counter);
-        counter += 1;
+        sleepms(10);
+        let value: u16 = adc1.read(&mut pa2).unwrap();
+        rprintln!("{} {}", millis(), value);
     }
 }
 
