@@ -67,7 +67,7 @@ fn millis() -> u64 {
 fn sleepms(ms: u64) {
     let deadline = millis() + ms;
     while millis() < deadline {
-        cortex_m::asm::nop();
+        cortex_m::asm::wfi();
     }
 }
 
