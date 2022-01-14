@@ -8,14 +8,17 @@ use cortex_m_rt::entry;
 
 use core::cell::RefCell;
 
-use cortex_m::interrupt::Mutex;
-use cortex_m::peripheral::syst::SystClkSource;
-use cortex_m::peripheral::SYST;
+use cortex_m::{
+    interrupt::Mutex,
+    peripheral::{syst::SystClkSource, SYST},
+};
 
-use stm32f3xx_hal::adc::{Adc, ClockMode};
-use stm32f3xx_hal::pac;
-use stm32f3xx_hal::prelude::*;
-use stm32f3xx_hal::rcc::Clocks;
+use stm32f3xx_hal::{
+    adc::{Adc, ClockMode},
+    pac,
+    prelude::*,
+    rcc::Clocks,
+};
 
 struct TickCounter {
     #[allow(dead_code)]
@@ -106,6 +109,7 @@ fn main() -> ! {
 }
 
 #[cortex_m_rt::exception]
+#[allow(non_snake_case)]
 fn SysTick() {
     cortex_m::interrupt::free(|cs| {
         if let Some(counter) = &mut *TICK_COUNTER.borrow(cs).borrow_mut() {
